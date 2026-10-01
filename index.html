@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Election 2026 Policy Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,650&family=Libre+Franklin:wght@400;500;600&display=swap">
+<style>
+/* Layout: coalition seat projection first, then polling trend, issue grid, ideology map, fiscal totals, notes */
+:root{
+  --bg:#f5f6f4; --panel:#ffffff; --fg:#1b2220; --muted:#5d6865; --line:#dde2df; --grid:#eceeec;
+  --accent:#1f5c55; --chip:#eef1ef;
+  --agree:#2f7d4f; --split:#b4483a; --neutral:#8a8f8d;
+  --display:"Newsreader", Georgia, "Times New Roman", serif;
+  --body:"Libre Franklin", "Segoe UI", Helvetica, Arial, sans-serif;
+  --nat:#1f5fa8; --lab:#c8202f; --grn:#3a8f3a; --act:#c99a00; --nzf:#3d3d3d; --tpm:#8a1c2b; --top:#159c9c;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121615; --panel:#1a201e; --fg:#e6ebe9; --muted:#9aa6a2; --line:#2e3734; --grid:#232b29;
+  --accent:#6fc2b5; --chip:#232b29; --agree:#5dbb83; --split:#e07a6c; --neutral:#7d8582;
+  --nat:#5b95da; --lab:#ec5a65; --grn:#6cc06c; --act:#f0c62e; --nzf:#bdbdbd; --tpm:#d6687a; --top:#43cccc;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121615; --panel:#1a201e; --fg:#e6ebe9; --muted:#9aa6a2; --line:#2e3734; --grid:#232b29;
+  --accent:#6fc2b5; --chip:#232b29; --agree:#5dbb83; --split:#e07a6c; --neutral:#7d8582;
+  --nat:#5b95da; --lab:#ec5a65; --grn:#6cc06c; --act:#f0c62e; --nzf:#bdbdbd; --tpm:#d6687a; --top:#43cccc;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:grid;gap:40px}
+header{display:grid;gap:8px;max-width:75ch}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--display);font-weight:650;font-size:clamp(28px,4vw,40px);line-height:1.1;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:650;font-size:24px;margin:0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:650;font-size:18px;margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px;color:var(--muted)}
+section{display:grid;gap:14px;min-width:0;align-content:start}
+.intro{max-width:80ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sw{width:11px;height:11px;border-radius:50%;flex:none;display:inline-block}
+button{font:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toggle{display:flex;gap:6px;flex-wrap:wrap}
+.toggle button,.btn{font-size:13px;border:1px solid var(--line);background:var(--chip);color:var(--fg);border-radius:999px;padding:4px 11px;cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+svg text{font-family:var(--body);fill:var(--muted)}
+a{color:var(--accent)}
+
+/* coalition */
+.coal{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.coal{grid-template-columns:minmax(0,1fr)}}
+.blocs{display:grid;gap:16px}
+.bloc-row{display:grid;gap:6px}
+.bloc-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.bloc-top b{font-weight:600}
+.seats-num{font-variant-numeric:tabular-nums;font-weight:600;font-size:20px;font-family:var(--display)}
+.verdict{font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid currentColor}
+.v-yes{color:var(--agree)} .v-no{color:var(--muted)}
+.track{position:relative;height:26px;background:var(--chip);border-radius:6px;overflow:hidden;display:flex}
+.track span{height:100%;display:block;transition:width .25s}
+@media (prefers-reduced-motion:reduce){.track span{transition:none}}
+.mark61{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--fg)}
+.sliders{display:grid;gap:8px}
+.sl{display:grid;grid-template-columns:150px minmax(0,1fr) 92px;gap:10px;align-items:center;font-size:13.5px}
+@media (max-width:480px){.sl{grid-template-columns:110px minmax(0,1fr) 80px}}
+.sl label{display:flex;gap:6px;align-items:center}
+.sl input[type=range]{width:100%}
+.sl output{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.sl output b{color:var(--fg);font-weight:600}
+.check{font-size:13px;display:flex;gap:8px;align-items:center}
+
+/* grid */
+.table-wrap{overflow:auto;max-height:80vh;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+#grid thead tr:first-child th{top:0;height:24px}
+#grid thead tr:nth-child(2) th{top:24px;box-shadow:0 1px 0 var(--line)}
+#grid thead th{z-index:2}
+#grid td.issue,#grid th:first-child{position:sticky;left:0;background:var(--panel);z-index:1}
+#grid thead th:first-child{z-index:3}
+table{border-collapse:collapse;font-size:12.5px;min-width:1180px;width:100%}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+thead th{font-size:12px;font-weight:600;position:sticky;top:0;background:var(--panel)}
+thead tr:first-child th{border-bottom:none;padding-bottom:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.issue{width:200px;font-size:13px}
+td.issue b{display:block;font-weight:600}
+.bsep{border-left:2px solid var(--line)}
+.stance{display:inline-block;font-size:11px;font-weight:600;padding:0 6px;border-radius:4px;margin-bottom:3px;border:1px solid var(--line);background:var(--chip);color:var(--fg)}
+.s-for{border-color:var(--agree);color:var(--agree)}
+.s-against{border-color:var(--split);color:var(--split)}
+.s-none{color:var(--muted)}
+.inf{font-size:10.5px;color:var(--muted);margin-left:4px}
+.ag{font-size:11.5px;font-weight:600;white-space:nowrap}
+.ag-yes{color:var(--agree)} .ag-split{color:var(--split)} .ag-na{color:var(--muted);font-weight:500}
+.summary-chips{display:flex;gap:10px;flex-wrap:wrap;font-size:13px}
+
+
+#cardsView{display:grid;gap:16px}
+#cardsView[hidden],.table-wrap[hidden],#dashNote[hidden]{display:none}
+.cgroup{display:grid;gap:8px}
+.cg-name{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.cg-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.cg-cards{grid-template-columns:minmax(0,1fr)}}
+.pcard{border:1px solid var(--line);border-top:3px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:6px;align-content:start;background:var(--panel)}
+.pcard.gap{background:var(--chip);border-top-color:var(--line)}
+.pc-head{display:flex;gap:6px;align-items:center;font-weight:600;font-size:13.5px}
+.pc-head a{color:var(--fg);text-decoration:none}
+.pc-head a:hover{text-decoration:underline}
+.pc-line{font-size:14.5px;line-height:1.45;font-weight:600}
+.pc-gap{font-size:13px;color:var(--muted)}
+.pc-more{font-size:13.5px;line-height:1.45;color:var(--muted);margin-top:6px}
+#issueTabs button{font-size:13px}
+
+/* fiscal */
+.fiscal{display:grid;gap:0}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:20px;align-items:center;padding-block:10px;border-bottom:1px solid var(--grid)}
+.frow:last-child,.frow:nth-last-child(2),.fhead{border-bottom:none}
+@media (max-width:700px){.frow{grid-template-columns:minmax(0,1fr)}}
+.fleft b{font-weight:600;font-size:14px}
+.fnote{font-size:12.5px;color:var(--muted);margin-top:2px}
+.fplot{position:relative;display:grid;gap:4px}
+.ftick{position:absolute;top:-10px;bottom:-10px;width:1px;background:var(--grid)}
+.fb{position:relative;display:flex;align-items:center;gap:6px;height:14px}
+.fb span{display:block;height:100%;border-radius:3px;position:relative}
+.fb em{font-style:normal;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.faxis{position:relative;height:16px;font-size:11px;color:var(--muted)}
+.faxis span{position:absolute;transform:translateX(-50%)}
+.flegend{display:flex;gap:18px;font-size:12.5px;color:var(--muted)}
+.flegend i{display:inline-block;width:14px;height:10px;margin-right:6px;vertical-align:-1px;border-radius:2px}
+.kf{background:var(--muted)} .kr{border:2px solid var(--muted)}
+
+.fiscal{display:grid;gap:12px}
+.fbars{display:grid;gap:3px}
+.fbar{display:flex;align-items:center;gap:8px;font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.fbar span.b{height:12px;border-radius:3px;display:block;min-width:2px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.legend button{display:flex;align-items:center;gap:6px;background:none;border:1px solid transparent;color:var(--fg);padding:3px 8px;border-radius:999px;cursor:pointer}
+.legend button[aria-pressed="false"]{opacity:.35}
+.notes ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:85ch}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">New Zealand general election, Saturday 7 November 2026</div>
+    <h1>Election 2026 Policy Map</h1>
+    <p class="muted">Under proportional representation your party vote helps decide which group of parties governs. This page shows the likely coalitions, where they agree and disagree, what each party's plans cost, and how the parties line up. Figures are as of 1 October 2026.</p>
+  </header>
+
+  <!-- 1. Coalitions -->
+  <section>
+    <div class="head"><h2>Who could form a government</h2><button class="btn" type="button" id="resetVotes">Reset to poll average</button></div>
+    <p class="small intro">Seats are calculated with the Sainte-Laguë method used by the Electoral Commission, from the average of the six most recent polls (27 July to 3 September 2026). Move a slider to test other results. A party needs 5 percent of the party vote or one electorate seat. 61 of 120 seats is a majority.</p>
+    <div class="coal">
+      <div class="panel blocs" id="blocs"></div>
+      <div class="panel sliders" id="sliders"></div>
+    </div>
+  </section>
+
+  <!-- 2. Polling trend -->
+  <section>
+    <div class="head">
+      <h2>Party support over time</h2>
+      <div class="toggle" id="pollToggle">
+        <button type="button" id="pt-verian" data-s="verian" aria-pressed="true">1 News Verian poll</button>
+        <button type="button" id="pt-curia" data-s="curia" aria-pressed="false">Taxpayers' Union Curia poll</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="legend" id="legend"></div>
+      <div style="overflow-x:auto"><svg id="pollChart" viewBox="0 0 1000 380" role="img" aria-label="Party vote percentage by poll date" style="width:100%;min-width:640px;height:auto"></svg></div>
+      <p class="small">Party vote percentage. The first point is the 2023 election result. The dashed line is the 5 percent threshold. Select a party name to hide or show it.</p>
+    </div>
+  </section>
+
+  <!-- Fiscal -->
+  <section>
+    <h2>What each party's plans cost</h2>
+    <p class="small">Yearly new spending and new revenue or savings from announced policies, in billions of dollars. For scale, total government spending is roughly 150 billion dollars a year.</p>
+    <div class="panel fiscal" id="fiscal"></div>
+  </section>
+
+  <!-- 3. Issue grid -->
+  <section>
+    <h2>Where the parties stand, issue by issue</h2>
+    <p class="small intro">Pick an issue to compare the parties. Each entry is what the party says, taken from its own 2026 policy pages where possible (select a party name to open them), otherwise from the news and analyst reports listed below. Quotation marks show the party's exact words. Where a party's policy pages do not cover an issue, the entry says so.</p>
+    <div class="toggle" id="issueTabs" role="group" aria-label="Choose an issue"></div>
+    <div class="panel" id="cardsView"></div>
+    <div class="table-wrap" hidden><table id="grid"></table></div>
+    <p class="small" id="dashNote" hidden>A dash means the party’s 2026 policy pages do not cover the issue.</p>
+  </section>
+
+  <!-- 4. Ideology map + 5. Fiscal -->
+      <section>
+      <h2>How the parties line up</h2>
+      <p class="small intro">Left to right scores from the Manifesto Project, an academic project that codes every sentence of each party manifesto. The score is the share of sentences coded as right minus the share coded as left, so it runs from minus 100 to plus 100. The most recent New Zealand manifestos it has scored are from 2020. It does not cover Opportunity, and scores for 2023 and 2026 are not yet published.</p>
+      <div class="panel"><h3>2020 manifestos</h3><svg id="ideo" viewBox="0 0 1000 125" role="img" aria-label="Party left to right scores for 2020" style="width:100%;height:auto"></svg></div>
+      <div class="panel"><h3>Since proportional representation began in 1996</h3><div style="overflow-x:auto"><svg id="ideoTime" viewBox="0 0 1000 360" role="img" aria-label="Party left to right scores by election" style="width:100%;min-width:600px;height:auto"></svg></div>
+      <p class="small">Te Pāti Māori is shown under its earlier name, the Māori Party, from 2005. Scores move a lot between elections because each manifesto is scored on its own wording, so trends matter more than single points.</p></div>
+    </section>
+
+  <section class="notes">
+    <h2>Notes and sources</h2>
+    <ul class="small">
+      <li>Seat projections ignore overhang seats and assume parties under 5 percent win no electorate unless the box is ticked. Te Pāti Māori won six Māori electorates in 2023, so it is ticked by default.</li>
+      <li>The coalition groups follow the parties' stated preferences: National, ACT and New Zealand First govern together now; Labour, Green and Te Pāti Māori have signalled they would work together. Opportunity has not committed to either side.</li>
+      <li>No position on this page is judged by its author. The issue grid shows the parties' own pledges. The line up uses Manifesto Project scores (dataset version 2026a).</li>
+      <li>Most cost figures come from the Taxpayers' Union "Bribe-o-meter". The Taxpayers' Union is a lobby group that favours lower spending, and its totals for some parties include items the parties dispute or have not campaigned on. Party figures are used where they exist.</li>
+      <li>Polling figures were transcribed from the Wikipedia polling table and should be spot checked against the original releases.</li>
+    </ul>
+    <ul class="small">
+      <li><a href="https://en.wikipedia.org/wiki/Opinion_polling_for_the_2026_New_Zealand_general_election">Opinion polling for the 2026 election, Wikipedia</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/2026_New_Zealand_general_election">2026 New Zealand general election, policy pledges by party, Wikipedia</a></li>
+      <li><a href="https://manifesto-project.wzb.eu/">Manifesto Project dataset, version 2026a, WZB Berlin Social Science Center</a></li>
+      <li><a href="https://elections.nz/democracy-in-nz/what-is-new-zealands-system-of-government/what-is-mmp/sainte-lague/">How seats are allocated, Electoral Commission</a></li>
+      <li><a href="https://www.taxpayers.org.nz/bribe_o_meter_national">Taxpayers' Union Bribe-o-meter: National</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_labour">Labour</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_greens">Green</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_act">ACT</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_nzfirst">New Zealand First</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_opportunity">Opportunity</a></li>
+      <li><a href="https://nztax.tools/tax-insights/nz-election-2026-tax-policies-compared/">Election 2026 tax policies compared, NZ Tax Tools</a></li>
+      <li><a href="https://www.charteredaccountantsanz.com/member-services/technical/tax/tax-in-focus/election-2026-where-do-the-parties-stand-on-tax">Where do the parties stand on tax, Chartered Accountants Australia and New Zealand, 21 September 2026</a></li>
+      <li><a href="https://assets.kpmg.com/content/dam/kpmgsites/nz/pdf/2026/08/2026-election-policy-tracker-v2.pdf">2026 election policy tracker, KPMG, August 2026</a></li>
+      <li><a href="https://aapnews.aap.com.au/news/unlike-australia-nz-centre-right-sticks-with-net-zero">Party positions on net zero, Australian Associated Press</a></li>
+      <li><a href="https://ruralnewsgroup.co.nz/rural-news/rural-general-news/federated-farmers-labour-emissions-tax-policy">Labour farm emissions policy, Rural News, 15 September 2026</a></li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const PARTIES = {
+  nat:{name:"National", c:"--nat"}, lab:{name:"Labour", c:"--lab"}, grn:{name:"Green", c:"--grn"},
+  act:{name:"ACT", c:"--act"}, nzf:{name:"New Zealand First", c:"--nzf"}, tpm:{name:"Te Pāti Māori", c:"--tpm"}, top:{name:"Opportunity", c:"--top"}
+};
+const ORDER = ["nat","lab","grn","act","nzf","tpm","top"];
+const col = id => `var(${PARTIES[id].c})`;
+const BLOCS = [
+  {id:"right", name:"National, ACT and New Zealand First", parties:["nat","act","nzf"]},
+  {id:"left", name:"Labour, Green and Te Pāti Māori", parties:["lab","grn","tpm"]}
+];
+
+// ---------- 1. Seat projection ----------
+// Six most recent polls: Roy Morgan, RNZ Reid Research, 1News Verian, Talbot Mills, Curia (August), Curia (September). Order: nat, lab, grn, act, nzf, tpm, top
+const RECENT = [[31,24,15.5,10.5,7.5,1.5,9.5],[29.1,32.2,10.2,7.7,11.9,3.0,5.3],[29,30,12,9,8,1.1,8],[29,34,8,7,13,3,5.2],[31,27.8,10.1,7.3,9.1,1.5,6.1],[29,25.9,13.9,10.5,8.4,2,4.5]];
+const AVG = ORDER.map((_,i) => Math.round(RECENT.reduce((s,r) => s + r[i], 0) / RECENT.length * 10) / 10);
+let votes = [...AVG];
+let tpmElectorate = true;
+
+function seats(){
+  const elig = ORDER.map((p,i) => votes[i] >= 5 || (p === "tpm" && tpmElectorate) || (p === "act" && votes[i] > 0));
+  const out = ORDER.map(() => 0);
+  for(let s=0; s<120; s++){
+    let best = -1, bq = -1;
+    ORDER.forEach((p,i) => { if(!elig[i]) return; const q = votes[i] / (2*out[i] + 1); if(q > bq){ bq = q; best = i; } });
+    if(best < 0) break; out[best]++;
+  }
+  return out;
+}
+function drawCoalition(){
+  const st = seats();
+  const seatOf = p => st[ORDER.indexOf(p)];
+  let h = "";
+  BLOCS.forEach(b => {
+    const n = b.parties.reduce((s,p) => s + seatOf(p), 0);
+    h += `<div class="bloc-row"><div class="bloc-top"><b>${b.name}</b><span><span class="seats-num">${n}</span> seats <span class="verdict ${n>=61?'v-yes':'v-no'}">${n>=61?'Majority':'Short by '+(61-n)}</span></span></div>
+      <div class="track">${b.parties.map(p => `<span style="width:${seatOf(p)/120*100}%;background:${col(p)}" title="${PARTIES[p].name} ${seatOf(p)} seats"></span>`).join("")}<i class="mark61" style="left:${61/120*100}%"></i></div>
+      <div class="small">${b.parties.map(p => `${PARTIES[p].name} ${seatOf(p)}`).join(" · ")}</div></div>`;
+  });
+  const top = seatOf("top");
+  const r = BLOCS[0].parties.reduce((s,p)=>s+seatOf(p),0), l = BLOCS[1].parties.reduce((s,p)=>s+seatOf(p),0);
+  let king = "";
+  if(top > 0 && r < 61 && l < 61) king = `Neither group has a majority. Opportunity's ${top} seats would decide the government: with Opportunity, the first group would have ${r+top} and the second ${l+top}.`;
+  else if(top > 0) king = `Opportunity wins ${top} seats but is not needed for a majority.`;
+  else king = `Opportunity is below the threshold and wins no seats.`;
+  h += `<div class="bloc-row"><div class="bloc-top"><b>Opportunity</b><span><span class="seats-num">${top}</span> seats</span></div>
+     <div class="track"><span style="width:${top/120*100}%;background:${col('top')}"></span><i class="mark61" style="left:${61/120*100}%"></i></div>
+     <div class="small">${king}</div></div>
+     <p class="small">The black line marks 61 seats.</p>`;
+  document.getElementById("blocs").innerHTML = h;
+  ORDER.forEach((p,i) => { const o = document.getElementById("out-"+p); if(o) o.innerHTML = `<b>${votes[i].toFixed(1)}</b> percent, ${st[i]} seats`; });
+}
+function buildSliders(){
+  document.getElementById("sliders").innerHTML = `<h3>Party vote</h3>` + ORDER.map((p,i) => `
+    <div class="sl"><label for="sl-${p}"><span class="sw" style="background:${col(p)}"></span>${PARTIES[p].name}</label>
+    <input type="range" id="sl-${p}" min="0" max="45" step="0.5" value="${votes[i]}" data-i="${i}">
+    <output id="out-${p}"></output></div>`).join("") +
+    `<label class="check"><input type="checkbox" id="tpmElec" checked> Te Pāti Māori wins at least one electorate seat</label>
+     <p class="small">Poll average: ${ORDER.map((p,i)=>`${PARTIES[p].name} ${AVG[i]}`).join(", ")}.</p>`;
+  document.querySelectorAll("#sliders input[type=range]").forEach(s => s.addEventListener("input", e => { votes[+e.target.dataset.i] = +e.target.value; drawCoalition(); }));
+  document.getElementById("tpmElec").addEventListener("change", e => { tpmElectorate = e.target.checked; drawCoalition(); });
+}
+document.getElementById("resetVotes").addEventListener("click", () => { votes = [...AVG]; tpmElectorate = true; buildSliders(); drawCoalition(); });
+
+// ---------- 2. Polling ----------
+const POLLS = {
+ verian:`2023-10-14,38.1,26.9,11.6,8.6,6.1,3.1,2.2
+2024-02-10,38,28,12,8,6,3.7,1.9
+2024-04-20,36,30,14,7,4.2,3.7,1.2
+2024-06-15,38,29,13,7,6,3.3,1.5
+2024-08-10,38,30,11,7,6,4.2,1.1
+2024-10-05,37,29,12,8,5,3.8,2.6
+2024-11-30,37,29,10,8,6,7,1.5
+2025-02-03,34,33,10,9,5,3.7,1.9
+2025-03-29,36,32,10,9,7,3.4,2.1
+2025-05-24,34,29,12,8,8,3.7,1.3
+2025-08-02,34,33,10,8,9,3.7,1.3
+2025-10-04,34,32,11,8,9,2.8,0.8
+2025-12-03,36,35,7,10,9,0.6,0.4
+2026-02-07,34,32,11,9,10,2,1
+2026-04-11,30,37,11,7,10,1.5,3.3
+2026-06-13,29,32,13,6,11,1.8,4.6
+2026-08-08,29,30,12,9,8,1.1,8`,
+ curia:`2023-10-14,38.1,26.9,11.6,8.6,6.1,3.1,2.2
+2023-11-01,37,28.3,13.8,8.1,6,3.4,2.9
+2023-12-03,34.2,26.9,8.3,13,5.4,5.5,1.1
+2024-01-08,41,28.4,9.5,7.8,5.6,3.6,
+2024-02-01,39.6,27.9,9,13.7,5,2.3,
+2024-03-03,37.4,25.3,11.3,10,7.4,2.5,2.1
+2024-04-02,37.1,25.7,14.6,7.2,6.3,4.6,1.6
+2024-05-05,37.3,30,10.2,9.4,5.5,3.1,1.4
+2024-06-04,35.4,29.4,12.7,9.7,5.6,4,0.8
+2024-07-04,37.6,25.9,12.5,9.1,7.3,3.5,2.4
+2024-10-03,34.9,30.3,10.4,9.7,7.6,3,2.5
+2024-11-06,38.8,31.5,9.3,8.5,6.5,2.5,0.9
+2025-01-09,29.6,30.9,9.5,10.8,8.1,5.3,2.1
+2025-02-02,31.9,31.3,13.2,10,6.4,4.4,0.5
+2025-03-02,33.6,34.1,10,7.7,5.1,6.5,0.5
+2025-05-30,34.6,33.2,9.1,9.5,7.4,3.9,0.5
+2025-06-07,33.5,34.8,8.2,9.1,6.1,3.3,1.8
+2025-07-02,33.9,31.6,9.4,9.1,9.8,3.5,1.2
+2025-08-03,31.8,33.6,9.8,8.6,7.8,3.2,2.6
+2025-10-01,29.6,31.2,12,6.6,10.6,4.4,1.6
+2025-11-02,30.2,33.3,9.2,8.6,9.1,3.3,1.2
+2025-12-03,30,31.6,10.8,8.9,8.1,3.1,1.6
+2026-01-14,31.5,34.4,7.7,7,11.9,3,0.7
+2026-02-01,31.3,34.1,10.3,6.7,10.5,2.9,1.4
+2026-03-01,28.4,34.4,10.5,7.5,9.7,3.2,1.9
+2026-04-01,29.8,33.4,7.8,9,13.6,2.6,2.6
+2026-05-03,30,31.9,9.7,6.5,11.7,4.1,2.8
+2026-06-04,30.1,32.2,11.5,7.8,11.4,3.1,3.2
+2026-07-01,30.5,31.5,10.4,6.9,10.8,3.4,3.3
+2026-08-01,31,27.8,10.1,7.3,9.1,1.5,6.1
+2026-09-03,29,25.9,13.9,10.5,8.4,2,4.5`
+};
+
+const parsePolls = s => s.trim().split("\n").map(l => { const a = l.split(","); return {d:new Date(a[0]), v:a.slice(1).map(x => x === "" ? null : +x)}; });
+let pollSeries = "verian";
+const hidden = new Set();
+function drawPolls(){
+  const rows = parsePolls(POLLS[pollSeries]);
+  const W=1000,H=380,m={l:44,r:150,t:16,b:36};
+  const t0 = new Date("2023-10-01").getTime(), t1 = new Date("2026-11-15").getTime();
+  const X = d => m.l + (d.getTime()-t0)/(t1-t0)*(W-m.l-m.r);
+  const Y = v => m.t + (1 - v/45)*(H-m.t-m.b);
+  let s = "";
+  for(let v=0; v<=45; v+=5){
+    s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    if(v%10===0) s += `<text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end" font-size="12">${v}</text>`;
+  }
+  s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(5)}" y2="${Y(5)}" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1"/>`;
+  ["2024-01-01","2025-01-01","2026-01-01"].forEach(d => { const x = X(new Date(d));
+    s += `<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H-m.b}" stroke="var(--grid)"/><text x="${x}" y="${H-m.b+20}" text-anchor="middle" font-size="12">${d.slice(0,4)}</text>`; });
+  const ex = X(new Date("2026-11-07"));
+  s += `<line x1="${ex}" x2="${ex}" y1="${m.t}" y2="${H-m.b}" stroke="var(--accent)" stroke-dasharray="2 3"/><text x="${ex}" y="${H-m.b+20}" text-anchor="middle" font-size="12" style="fill:var(--accent)">Election</text>`;
+  const ends = [];
+  ORDER.forEach((p,i) => {
+    if(hidden.has(p)) return;
+    const pts = rows.filter(r => r.v[i] !== null).map(r => [X(r.d), Y(r.v[i]), r]);
+    s += `<polyline fill="none" stroke="${col(p)}" stroke-width="2.25" stroke-linejoin="round" points="${pts.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ")}"/>`;
+    pts.forEach(q => s += `<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="2.6" fill="${col(p)}"><title>${PARTIES[p].name}, ${q[2].d.toISOString().slice(0,10)}: ${q[2].v[i]} percent</title></circle>`);
+    const last = pts[pts.length-1]; ends.push({p, y:last[1], x:last[0], v:last[2].v[i]});
+  });
+  // end labels, nudged apart
+  ends.sort((a,b)=>a.y-b.y);
+  for(let k=1;k<ends.length;k++) if(ends[k].y - ends[k-1].y < 15) ends[k].y = ends[k-1].y + 15;
+  ends.forEach(e => s += `<text x="${W-m.r+10}" y="${e.y+4}" font-size="12.5" style="fill:${col(e.p)};font-weight:600">${PARTIES[e.p].name} ${e.v}</text>`);
+  document.getElementById("pollChart").innerHTML = s;
+}
+
+document.getElementById("legend").innerHTML = ORDER.map(p => `<button type="button" id="lg-${p}" data-p="${p}" aria-pressed="true"><span class="sw" style="background:${col(p)}"></span>${PARTIES[p].name}</button>`).join("");
+document.getElementById("legend").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  const p = b.dataset.p; hidden.has(p) ? hidden.delete(p) : hidden.add(p); b.setAttribute("aria-pressed", !hidden.has(p)); drawPolls(); });
+document.getElementById("pollToggle").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  pollSeries = b.dataset.s; document.querySelectorAll("#pollToggle button").forEach(x => x.setAttribute("aria-pressed", x === b)); drawPolls(); });
+
+// ---------- 3. Issue grid ----------
+// Each cell: what the party says, from its own 2026 policy pages where possible, otherwise from the reports listed in sources. null = not covered.
+const POLICY_PAGES = {nat:"https://www.national.org.nz/policies", act:"https://www.act.org.nz/policies", nzf:"https://www.nzfirst.nz/policy", lab:"https://www.labour.org.nz/policies", grn:"https://www.greens.org.nz/policy", tpm:"https://www.maoriparty.org.nz/policy", top:"https://www.opportunity.org.nz/"};
+const GRID = [
+ {topic:"Tax", p:{
+  nat:"“No new taxes so you keep more of what you earn.”",
+  act:"“You shouldn't be punished for success with ever-increasing taxes.” Wants a flatter income tax.",
+  nzf:"Company tax cut to 20 percent for businesses under 30 million dollars turnover. First 14,000 dollars of income tax free.",
+  lab:"28 percent tax on profit from selling investment property after 1 July 2027. “Nine in 10 New Zealanders won't pay it.”",
+  grn:"2.5 percent yearly wealth tax on net assets over 10 million dollars. First 10,000 dollars of income tax free, 45 percent rate above 160,000 dollars.",
+  tpm:"“Make sure the wealthiest pay their fair share.” 48 percent rate above 300,000 dollars, wealth, land banking and vacant house taxes.",
+  top:"Three income tax rates of 28, 34 and 39 percent, plus a 1.75 percent yearly land value tax."}},
+ {topic:"Government spending", p:{
+  nat:"Keep the Budget Responsibility Rules to keep debt down and return to surplus.",
+  act:"Government should be a “careful spender” that provides essential services well. Merge ministries and agencies.",
+  nzf:"A 100 billion dollar New Zealand Future Fund for long term infrastructure.",
+  lab:"Surplus by 2029 to 2030 and net debt down to 20 percent of the economy. A New Zealand Future Fund to invest in local businesses.",
+  grn:"“Substantially increasing government revenue and expenditure as a proportion of GDP.” 8 billion dollars of new investment over four years.",
+  tpm:null, top:null}},
+ {topic:"Cost of living", p:{
+  nat:"Separate the supermarket chains, solar to cut power bills, and cap council rates.",
+  act:"Says the crisis comes from high prices and low wages, so policy must support “production and investment”.",
+  nzf:"Break up the supermarket duopoly, split the big power companies, buy back the Bank of New Zealand.",
+  lab:"20 dollar weekly public transport fare cap, ban on price gouging, fairer wholesale grocery supply, and a Fair Go law against consumer tricks.",
+  grn:"Raise main benefits to “a liveable income”. A government owned supermarket chain.",
+  tpm:"“Lift incomes so people can live with dignity” and strengthen welfare. Remove GST from food.",
+  top:"Stronger Commerce Commission powers."}},
+ {topic:"Housing", p:{
+  nat:"Make 5 percent first home deposits more accessible. Simplify building consents.",
+  act:"“People should be free to build on their property unless causing material harm.”",
+  nzf:null,
+  lab:"Start building and repair work now, including social housing. 6,000 more state homes.",
+  grn:"Tens of thousands of public homes, 2 percent cap on rent rises, end no cause evictions.",
+  tpm:"Build public and affordable homes, ease building on Māori land, stop speculation.",
+  top:"Land value tax “projected to reduce property prices 10 to 15 percent”."}},
+ {topic:"Health", p:{
+  nat:"96 more beds at Christchurch Hospital.",
+  act:"A competitive health sector mixing public, private and community providers. Pharmacists treating more conditions, a national cancer centre.",
+  nzf:"“Shift the focus of healthcare from treating illness to preventing it.”",
+  lab:"Three free doctor's visits a year for everyone, free prescriptions, free maternity scans and cervical screening, a job for every graduate nurse.",
+  grn:"Free GP, dental, ambulance and mental health care. More Pharmac funding.",
+  tpm:"Rebuild a Māori led health authority focused on prevention.",
+  top:null}},
+ {topic:"Education", p:{
+  nat:"Lower student loan repayment rate so graduates keep more of their earnings.",
+  act:"“Core skills, clear standards, school choice, and accountability for results.” Teachers allowed reasonable force to remove disruptive students.",
+  nzf:null,
+  lab:"10 percent cut to student loan balances, balances under 2,000 dollars written off. Locally made school lunches.",
+  grn:"Restore free school lunches and add 400 schools. Free tertiary education.",
+  tpm:null,
+  top:"Restore polytechnic funding."}},
+ {topic:"Work and wages", p:{
+  nat:"Extend paid parental leave from 26 to 30 weeks, with shared leave.",
+  act:"Freeze the minimum wage for three years, lower training wage for under 20s, tighter personal grievance rules.",
+  nzf:null,
+  lab:"Bigger Apprenticeship Boost with a 1,000 dollar toolbox grant. Reinstate the pay equity regime.",
+  grn:"Automatic union membership for new employees.",
+  tpm:null,
+  top:"A universal income so people can choose jobs “without desperation”. Minimum wage kept."}},
+ {topic:"KiwiSaver", p:{
+  nat:"Compulsory for all workers, savings start at birth, contributions rising to 6 percent by 2032.",
+  act:null,
+  nzf:"Compulsory enrolment at birth with a 1,000 dollar Crown contribution.",
+  lab:"Compulsory employer contributions rising to 6 percent by 2032, plus cover during parental leave and for over 65s.",
+  grn:null,
+  tpm:"Compulsory, 12 percent combined by 2032, 1,500 dollars at birth.",
+  top:"Compulsory, rising to 6 percent each from employer and employee."}},
+ {topic:"Superannuation", p:{
+  nat:"Raise the age to 67. The leader said in May 2025 that National “will go to the next election on that platform”.",
+  act:"Leader supports raising the eligibility age.",
+  nzf:"Only New Zealand citizens eligible from 2029.",
+  lab:"Ruled out changing the age.",
+  grn:null, tpm:null,
+  top:"Replaced by the citizen's income plus a top up that keeps current rates."}},
+ {topic:"Climate", p:{
+  nat:"Keep net zero by 2050. Solar and home energy upgrades.",
+  act:"“Scrap Net Zero, cut the carbon tax” and scrap the Climate Change Commission.",
+  nzf:"“We need to get out of the Paris Accord altogether.”",
+  lab:"SolarSaver: solar for homes and communities without the upfront cost.",
+  grn:"“Urgent, equitable, evidence-based actions.” Mass electrification and a public renewable energy company.",
+  tpm:"Protect land and sea from extractive industries, invest in climate resilience.",
+  top:"“Affordable, clean and abundant power” through a long term energy strategy."}},
+ {topic:"Farm emissions", p:{
+  nat:"No pricing. 450 million dollars for emissions reducing technology.",
+  act:"A split gas target easing methane rules.",
+  nzf:null,
+  lab:"Will not campaign on pricing farm emissions. Limit whole farm conversion to carbon forestry.",
+  grn:"Phase out synthetic nitrogen fertiliser and reduce livestock numbers.",
+  tpm:null,
+  top:"No new environmental taxes."}},
+ {topic:"Mining and resources", p:{
+  nat:"In government passed the Fast-track Approvals Act for major projects, including mines.",
+  act:null,
+  nzf:"Expand mining, open conservation land, and return half of mining royalties to the regions.",
+  lab:null,
+  grn:"Revoke coal, gold and seabed mining consents approved under fast track.",
+  tpm:"Ban seabed mining.",
+  top:null}},
+ {topic:"Treaty of Waitangi", p:{
+  nat:"In government voted against ACT's Treaty Principles Bill.",
+  act:"“One law for all.” Wind up the Waitangi Tribunal once historic claims settle.",
+  nzf:"Abolish the Waitangi Tribunal and replace it with a Treaty Completion Commission. Referendum on the Māori electorates.",
+  lab:"Restore Treaty duties for school boards. Repeal the Regulatory Standards Act.",
+  grn:"Honour Te Tiriti, uphold Māori rights, 200 million dollars for te reo Māori.",
+  tpm:"Te Tiriti based constitutional change. Binding Waitangi Tribunal recommendations.",
+  top:null}},
+ {topic:"Law and order", p:{
+  nat:"Affirmative consent law, no good character discounts in sexual offence sentencing, an Auckland transport police team.",
+  act:"Burglary added to three strikes. Deport serious offenders who are not citizens.",
+  nzf:"Stronger deportation powers.",
+  lab:null,
+  grn:"A justice system that “heals and protects” through restorative practice and rehabilitation.",
+  tpm:"A Māori led justice authority. Abolish prisons by 2040.",
+  top:null}},
+ {topic:"Immigration", p:{
+  nat:null,
+  act:"Abolish permanent residency, tougher English requirements, a rural workforce visa.",
+  nzf:"“Sweeping changes” including a referendum to cap residence visas at 20,000 a year.",
+  lab:null,
+  grn:"“A progressive, Tiriti-based immigration system that is humane, fair, practical, sustainable.”",
+  tpm:null, top:null}}
+];
+let gridIssue = 0, gridAll = false;
+function splitHead(t){
+  const m = t.match(/^(.+?[.”])(\s+)(.+)$/);
+  if(!m || m[1].length < 12) return [t, ""];
+  return [m[1], m[3]];
+}
+function drawGrid(){
+  const tabs = document.getElementById("issueTabs");
+  tabs.innerHTML = GRID.map((r,i) => `<button type="button" id="it-${i}" data-i="${i}" aria-pressed="${!gridAll && i===gridIssue}">${r.topic}</button>`).join("") +
+    `<button type="button" id="it-all" data-i="all" aria-pressed="${gridAll}">All issues as a table</button>`;
+  document.getElementById("cardsView").hidden = gridAll;
+  document.querySelector(".table-wrap").hidden = !gridAll;
+  document.getElementById("dashNote").hidden = !gridAll;
+  if(gridAll){ drawTable(); return; }
+  const row = GRID[gridIssue];
+  const card = p => { const t = row.p[p];
+    if(t === null) return `<div class="pcard gap"><div class="pc-head"><span class="sw" style="background:${col(p)}"></span>${PARTIES[p].name}</div><div class="pc-gap">Not covered on 2026 policy pages</div></div>`;
+    const [h, more] = splitHead(t);
+    return `<div class="pcard" style="border-top-color:${col(p)}"><div class="pc-head"><span class="sw" style="background:${col(p)}"></span><a href="${POLICY_PAGES[p]}">${PARTIES[p].name}</a></div>
+      <div class="pc-line">${h}</div>${more ? `<div class="pc-more">${more}</div>` : ""}</div>`; };
+  const group = (name, ps) => `<div class="cgroup"><div class="cg-name">${name}</div><div class="cg-cards">${ps.map(card).join("")}</div></div>`;
+  document.getElementById("cardsView").innerHTML = `<h3>${row.topic}</h3>` + group(BLOCS[0].name, BLOCS[0].parties) + group(BLOCS[1].name, BLOCS[1].parties) + group("Not aligned", ["top"]);
+}
+function drawTable(){
+  const cols = [...BLOCS[0].parties, ...BLOCS[1].parties, "top"];
+  let h = `<thead><tr><th></th><th colspan="3">${BLOCS[0].name}</th><th colspan="3" class="bsep">${BLOCS[1].name}</th><th class="bsep"></th></tr><tr><th>Issue</th>`;
+  cols.forEach(c => h += `<th class="${(c==='lab'||c==='top')?'bsep':''}"><span class="sw" style="background:${col(c)};margin-right:5px"></span><a href="${POLICY_PAGES[c]}" style="color:inherit">${PARTIES[c].name}</a></th>`);
+  h += `</tr></thead><tbody>`;
+  GRID.forEach(row => {
+    h += `<tr><td class="issue"><b>${row.topic}</b></td>`;
+    cols.forEach(c => { const t = row.p[c];
+      h += `<td class="${(c==='lab'||c==='top')?'bsep':''}">${t === null ? '<span class="s-none" title="Not covered on the party’s 2026 policy pages">—</span>' : splitHead(t)[0]}</td>`; });
+    h += `</tr>`;
+  });
+  document.getElementById("grid").innerHTML = h + `</tbody>`;
+}
+document.getElementById("issueTabs").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.i === "all"){ gridAll = true; } else { gridAll = false; gridIssue = +b.dataset.i; } drawGrid(); });
+
+// Manifesto Project left to right (RILE) scores, dataset version 2026a. Negative is left, positive is right.
+const RILE = {"lab": [[1996, -37.6], [1999, -23.1], [2002, -28.1], [2005, -29.7], [2008, 3.9], [2011, -9.9], [2014, -37.4], [2017, -22.8], [2020, -16.2]], "act": [[1996, 15.1], [1999, 48.6], [2002, 44.4], [2005, 15.5], [2008, 21.3], [2011, 56.3], [2014, 55.6], [2017, 36.3], [2020, 19.8]], "nat": [[1996, -7.2], [1999, 32.1], [2002, 6.8], [2005, 47.8], [2008, 37.5], [2011, -1.3], [2014, -6.7], [2017, -3.8], [2020, 3.7]], "nzf": [[1996, -25.2], [1999, -6.8], [2002, -2.4], [2011, 7.8], [2014, -18.5], [2017, -15.6], [2020, -7.2]], "grn": [[1999, 0.0], [2002, -10.8], [2005, 1.1], [2008, 13.7], [2011, 7.3], [2014, -23.5], [2017, -16.0], [2020, -26.9]], "tpm": [[2005, -38.0], [2008, -18.1], [2011, -2.0], [2014, -5.6], [2017, -20.1], [2020, -23.9]]};
+const RP = ["tpm","grn","lab","nzf","nat","act"];
+function drawIdeo(){
+  // single line: 2020 scores
+  const W=1000, m={l:50,r:50}, y=70, D=60;
+  const X = v => m.l + (v+D)/(2*D)*(W-m.l-m.r);
+  let s = `<line x1="${m.l}" x2="${W-m.r}" y1="${y}" y2="${y}" stroke="var(--muted)" stroke-width="2"/>`;
+  [-60,-40,-20,0,20,40,60].forEach(v => s += `<line x1="${X(v)}" x2="${X(v)}" y1="${y-5}" y2="${y+5}" stroke="var(--muted)" stroke-width="${v===0?2:1}"/><text x="${X(v)}" y="${y+22}" font-size="11" text-anchor="middle">${v}</text>`);
+  s += `<text x="${m.l}" y="${y+42}" font-size="12" style="fill:var(--fg)">Left</text><text x="${W-m.r}" y="${y+42}" font-size="12" text-anchor="end" style="fill:var(--fg)">Right</text>`;
+  const pts = RP.map(p => ({p, v: RILE[p][RILE[p].length-1][1]})).sort((a,b)=>a.v-b.v);
+  let lastX = -999, lvl = 0;
+  pts.forEach(q => { const x = X(q.v); lvl = (x - lastX < 110) ? (lvl+1)%2 : 0; lastX = x;
+    s += `<circle cx="${x}" cy="${y}" r="8" fill="${col(q.p)}"><title>${PARTIES[q.p].name}: ${q.v} (2020 manifesto)</title></circle>
+      <text x="${x}" y="${y-16-lvl*16}" font-size="11.5" text-anchor="middle" style="fill:var(--fg);font-weight:600">${PARTIES[q.p].name} ${q.v}</text>`; });
+  document.getElementById("ideo").innerHTML = s;
+
+  // over time
+  const W2=1000,H2=360,mm={l:50,r:150,t:16,b:36};
+  const XT = yr => mm.l + (yr-1996)/(2020-1996)*(W2-mm.l-mm.r);
+  const YT = v => mm.t + (D - v)/(2*D)*(H2-mm.t-mm.b);
+  let t = "";
+  [-60,-40,-20,0,20,40,60].forEach(v => t += `<line x1="${mm.l}" x2="${W2-mm.r}" y1="${YT(v)}" y2="${YT(v)}" stroke="${v===0?'var(--muted)':'var(--grid)'}"/><text x="${mm.l-8}" y="${YT(v)+4}" font-size="11" text-anchor="end">${v}</text>`);
+  [1996,1999,2002,2005,2008,2011,2014,2017,2020].forEach(yr => t += `<text x="${XT(yr)}" y="${H2-mm.b+20}" font-size="11" text-anchor="middle">${yr}</text>`);
+  t += `<text x="${mm.l+6}" y="${YT(58)}" font-size="11.5" style="fill:var(--fg)">Right</text><text x="${mm.l+6}" y="${YT(-56)}" font-size="11.5" style="fill:var(--fg)">Left</text>`;
+  const ends = [];
+  RP.forEach(p => {
+    const pts = RILE[p].map(([yr,v]) => [XT(yr), YT(v), yr, v]);
+    t += `<polyline fill="none" stroke="${col(p)}" stroke-width="2.25" stroke-linejoin="round" points="${pts.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ")}"/>`;
+    pts.forEach(q => t += `<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="3" fill="${col(p)}"><title>${PARTIES[p].name}, ${q[2]}: ${q[3]}</title></circle>`);
+    const l = pts[pts.length-1]; ends.push({p, y:l[1], v:l[3]});
+  });
+  ends.sort((a,b)=>a.y-b.y);
+  for(let k=1;k<ends.length;k++) if(ends[k].y-ends[k-1].y < 15) ends[k].y = ends[k-1].y + 15;
+  ends.forEach(e => t += `<text x="${W2-mm.r+10}" y="${e.y+4}" font-size="12" style="fill:${col(e.p)};font-weight:600">${PARTIES[e.p].name}</text>`);
+  document.getElementById("ideoTime").innerHTML = t;
+}
+
+// ---------- 5. Fiscal ----------
+// Yearly billions. spend = new spending; rev = new revenue or savings. Four year figures divided by four.
+const FISCAL = [
+  {p:"nat", spend:0.5, rev:0, note:"Taxpayers' Union: 1.99 billion over four years. No new taxes. Savings from spending restraint not itemised."},
+  {p:"lab", spend:8.3, rev:0.7, note:"Taxpayers' Union: 33.2 billion over four years, including 11 billion for pay equity and 5.5 billion for foreign aid. Capital gains tax raises 0.7 billion a year (Labour)."},
+  {p:"grn", spend:59.2, rev:5.1, note:"Taxpayers' Union: 236.8 billion over four years, including items such as a 96 billion ACC extension the party has not costed for 2026. Net new revenue 5.1 billion a year (Green Party). The Greens say most new spending is funded by tax and borrowing."},
+  {p:"act", spend:0.18, rev:0.02, note:"Taxpayers' Union: 0.7 billion over four years. Spending cuts not itemised."},
+  {p:"nzf", spend:12.9, rev:0.5, note:"Taxpayers' Union: about 51.6 billion over four years, of which 26.7 billion is the one off bank buyback and 13.3 billion an infrastructure fund. Super for citizens only saves about 0.5 billion a year."},
+  {p:"tpm", spend:2.8, rev:19.8, note:"Te Pāti Māori manifesto: about 19.8 billion a year from new taxes and 2.8 billion for removing GST on food. Other spending not costed. No Taxpayers' Union figure."},
+  {p:"top", spend:54.6, rev:0, note:"Taxpayers' Union: 218.4 billion over four years, mostly the citizen's income after subtracting the benefits it replaces. Land value tax revenue not stated by the party."}
+];
+function drawFiscal(){
+  const max = 60, pct = v => Math.max(0.3, v/max*90);
+  const ticks = [0,10,20,30,40,50,60];
+  let h = `<div class="frow fhead"><div></div><div class="flegend"><span><i class="kf"></i>New spending</span><span><i class="kr"></i>New revenue or savings</span></div></div>`;
+  FISCAL.forEach(f => {
+    h += `<div class="frow"><div class="fleft"><b><span class="sw" style="background:${col(f.p)};margin-right:6px"></span>${PARTIES[f.p].name}</b><div class="fnote">${f.note}</div></div>
+      <div class="fplot">${ticks.map(t => `<i class="ftick" style="left:${t/max*90}%"></i>`).join("")}
+        <div class="fb"><span style="width:${pct(f.spend)}%;background:${col(f.p)}"></span><em>${f.spend}</em></div>
+        <div class="fb"><span style="width:${pct(f.rev)}%;border:2px solid ${col(f.p)};background:transparent"></span><em>${f.rev}</em></div>
+      </div></div>`;
+  });
+  h += `<div class="frow"><div></div><div class="faxis">${ticks.map(t => `<span style="left:${t/max*90}%">${t}</span>`).join("")}</div></div>
+        <div class="frow"><div></div><div class="small" style="width:90%;text-align:center">billion dollars a year</div></div>`;
+  document.getElementById("fiscal").innerHTML = h;
+}
+
+buildSliders(); drawCoalition(); drawPolls(); drawGrid(); drawIdeo(); drawFiscal();
+</script>
+
+</body>
+</html>
