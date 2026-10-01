@@ -175,7 +175,8 @@ td.issue b{display:block;font-weight:600}
     <div class="panel">
       <div class="legend" id="legend"></div>
       <div style="overflow-x:auto"><svg id="pollChart" viewBox="0 0 1000 380" role="img" aria-label="Party vote percentage by poll date" style="width:100%;min-width:640px;height:auto"></svg></div>
-      <p class="small">Party vote percentage. The first point is the 2023 election result. The dashed line is the 5 percent threshold. Select a party name to hide or show it.</p>
+      <p class="small">Party vote percentage. Dots are individual polls. The solid line is the trend estimated from this pollster's polls only, and the shaded band is its 95 percent range, which narrows where polls are frequent and widens between them. After the latest poll the line is dashed and the band widens to election day, showing how far support could drift if nothing else is known. The number beside each party is the trend at the latest poll, plus or minus its 95 percent range. The first point is the 2023 election result. The dashed grey line is the 5 percent threshold. Select a party name to hide or show it.</p>
+      <p class="small">Method: a random walk model fitted with a Kalman filter and smoother, as used by poll aggregators (Jackman 2005, Australian Journal of Political Science). Each poll is assumed to survey about 1,000 people, with its sampling error widened by a design effect of 1.5 to allow for weighting. How quickly support drifts is estimated from the data for each party and pollster. The band covers sampling error only; error shared by all polls, such as people who refuse to answer, is not included.</p>
     </div>
   </section>
 
@@ -348,12 +349,51 @@ const POLLS = {
 const parsePolls = s => s.trim().split("\n").map(l => { const a = l.split(","); return {d:new Date(a[0]), v:a.slice(1).map(x => x === "" ? null : +x)}; });
 let pollSeries = "verian";
 const hidden = new Set();
+// Poll trend: local level (random walk) Kalman filter with Rauch-Tung-Striebel smoother, fitted to one pollster at a time.
+// Observation variance: p(1-p)/n, with n = 1000 people per poll and a design effect of 1.5 (effective n about 667).
+// Daily drift variance: chosen per party by maximum likelihood over a grid, so the data sets how fast support moves.
+const POLL_N = 1000, DEFF = 1.5, DAY = 86400000;
+const ELECTION = new Date("2026-11-07");
+function kalman(obs, q, tEnd){
+  // obs: [{t (day index), y, r}] sorted; returns daily smoothed mean and sd from day 0 to tEnd, plus log likelihood
+  const T = tEnd + 1, byDay = new Map();
+  obs.forEach(o => { if(!byDay.has(o.t)) byDay.set(o.t, []); byDay.get(o.t).push(o); });
+  const mf = new Float64Array(T), pf = new Float64Array(T), mp = new Float64Array(T), pp = new Float64Array(T);
+  let m = obs[0].y, P = 100, ll = 0;
+  for(let t=0; t<T; t++){
+    if(t > 0) P += q;
+    mp[t] = m; pp[t] = P;
+    (byDay.get(t) || []).forEach(o => { const S = P + o.r, k = P / S, e = o.y - m;
+      ll += -0.5*(Math.log(2*Math.PI*S) + e*e/S); m += k*e; P *= (1-k); });
+    mf[t] = m; pf[t] = P;
+  }
+  const ms = new Float64Array(T), ps = new Float64Array(T);
+  ms[T-1] = mf[T-1]; ps[T-1] = pf[T-1];
+  for(let t=T-2; t>=0; t--){ const c = pf[t] / pp[t+1];
+    ms[t] = mf[t] + c*(ms[t+1] - mp[t+1]); ps[t] = pf[t] + c*c*(ps[t+1] - pp[t+1]); }
+  return {mean: ms, sd: Array.from(ps, Math.sqrt), ll};
+}
+const Q_GRID = [0.0005,0.001,0.002,0.004,0.008,0.015,0.03,0.06,0.12];
+const trendCache = {};
+function trend(series, i){
+  const key = series + i; if(trendCache[key]) return trendCache[key];
+  const rows = parsePolls(POLLS[series]), d0 = rows[0].d.getTime();
+  const tEnd = Math.round((ELECTION.getTime() - d0)/DAY);
+  const obs = rows.map((r,k) => r.v[i] === null ? null : {t: Math.round((r.d.getTime()-d0)/DAY), y: r.v[i],
+    // first row is the 2023 election result, treated as exact
+    r: k === 0 ? 0.0001 : Math.max(r.v[i]*(100-r.v[i]), 25) / (POLL_N/DEFF)}).filter(Boolean);
+  let best = null;
+  Q_GRID.forEach(q => { const f = kalman(obs, q, tEnd); if(!best || f.ll > best.ll) best = {...f, q}; });
+  best.d0 = d0; best.lastT = obs[obs.length-1].t;
+  return trendCache[key] = best;
+}
+
 function drawPolls(){
   const rows = parsePolls(POLLS[pollSeries]);
-  const W=1000,H=380,m={l:44,r:150,t:16,b:36};
+  const W=1000,H=380,m={l:44,r:185,t:16,b:36};
   const t0 = new Date("2023-10-01").getTime(), t1 = new Date("2026-11-15").getTime();
   const X = d => m.l + (d.getTime()-t0)/(t1-t0)*(W-m.l-m.r);
-  const Y = v => m.t + (1 - v/45)*(H-m.t-m.b);
+  const Y = v => m.t + (1 - Math.max(0, Math.min(45, v))/45)*(H-m.t-m.b);
   let s = "";
   for(let v=0; v<=45; v+=5){
     s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
@@ -362,20 +402,33 @@ function drawPolls(){
   s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(5)}" y2="${Y(5)}" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1"/>`;
   ["2024-01-01","2025-01-01","2026-01-01"].forEach(d => { const x = X(new Date(d));
     s += `<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H-m.b}" stroke="var(--grid)"/><text x="${x}" y="${H-m.b+20}" text-anchor="middle" font-size="12">${d.slice(0,4)}</text>`; });
-  const ex = X(new Date("2026-11-07"));
+  const ex = X(ELECTION);
   s += `<line x1="${ex}" x2="${ex}" y1="${m.t}" y2="${H-m.b}" stroke="var(--accent)" stroke-dasharray="2 3"/><text x="${ex}" y="${H-m.b+20}" text-anchor="middle" font-size="12" style="fill:var(--accent)">Election</text>`;
   const ends = [];
+  let bands = "", lines = "", dots = "";
   ORDER.forEach((p,i) => {
     if(hidden.has(p)) return;
-    const pts = rows.filter(r => r.v[i] !== null).map(r => [X(r.d), Y(r.v[i]), r]);
-    s += `<polyline fill="none" stroke="${col(p)}" stroke-width="2.25" stroke-linejoin="round" points="${pts.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ")}"/>`;
-    pts.forEach(q => s += `<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="2.6" fill="${col(p)}"><title>${PARTIES[p].name}, ${q[2].d.toISOString().slice(0,10)}: ${q[2].v[i]} percent</title></circle>`);
-    const last = pts[pts.length-1]; ends.push({p, y:last[1], x:last[0], v:last[2].v[i]});
+    const f = trend(pollSeries, i), step = 3, T = f.mean.length;
+    const up = [], lo = [], ln = [], proj = [];
+    for(let t=0; t<T; t+=step){ const tt = Math.min(t, T-1), d = new Date(f.d0 + tt*DAY), x = X(d).toFixed(1);
+      up.push(x+","+Y(f.mean[tt] + 1.96*f.sd[tt]).toFixed(1)); lo.push(x+","+Y(f.mean[tt] - 1.96*f.sd[tt]).toFixed(1));
+      (tt <= f.lastT ? ln : proj).push(x+","+Y(f.mean[tt]).toFixed(1)); }
+    const dl = new Date(f.d0 + (T-1)*DAY), xl = X(dl).toFixed(1);
+    up.push(xl+","+Y(f.mean[T-1] + 1.96*f.sd[T-1]).toFixed(1)); lo.push(xl+","+Y(f.mean[T-1] - 1.96*f.sd[T-1]).toFixed(1)); proj.push(xl+","+Y(f.mean[T-1]).toFixed(1));
+    const xLast = X(new Date(f.d0 + f.lastT*DAY)).toFixed(1);
+    ln.push(xLast+","+Y(f.mean[f.lastT]).toFixed(1)); proj.unshift(xLast+","+Y(f.mean[f.lastT]).toFixed(1));
+    bands += `<polygon points="${up.join(" ")} ${lo.reverse().join(" ")}" fill="${col(p)}" fill-opacity="0.14" stroke="none"/>`;
+    lines += `<polyline fill="none" stroke="${col(p)}" stroke-width="2.25" stroke-linejoin="round" points="${ln.join(" ")}"/>`;
+    lines += `<polyline fill="none" stroke="${col(p)}" stroke-width="1.5" stroke-dasharray="3 3" points="${proj.join(" ")}"/>`;
+    rows.forEach(r => { if(r.v[i] === null) return;
+      dots += `<circle cx="${X(r.d).toFixed(1)}" cy="${Y(r.v[i]).toFixed(1)}" r="2.6" fill="${col(p)}" fill-opacity="0.45"><title>${PARTIES[p].name}, ${r.d.toISOString().slice(0,10)}: ${r.v[i]} percent</title></circle>`; });
+    const v = f.mean[f.lastT], h = 1.96*f.sd[f.lastT];
+    ends.push({p, y: Y(v), v: v.toFixed(1), h: h.toFixed(1)});
   });
-  // end labels, nudged apart
+  s += bands + dots + lines;
   ends.sort((a,b)=>a.y-b.y);
   for(let k=1;k<ends.length;k++) if(ends[k].y - ends[k-1].y < 15) ends[k].y = ends[k-1].y + 15;
-  ends.forEach(e => s += `<text x="${W-m.r+10}" y="${e.y+4}" font-size="12.5" style="fill:${col(e.p)};font-weight:600">${PARTIES[e.p].name} ${e.v}</text>`);
+  ends.forEach(e => s += `<text x="${W-m.r+10}" y="${e.y+4}" font-size="12.5" style="fill:${col(e.p)};font-weight:600">${PARTIES[e.p].name} ${e.v} <tspan font-weight="400" font-size="11">±${e.h}</tspan></text>`);
   document.getElementById("pollChart").innerHTML = s;
 }
 
