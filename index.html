@@ -156,7 +156,7 @@ td.issue b{display:block;font-weight:600}
   <!-- 1. Coalitions -->
   <section>
     <div class="head"><h2>Who could form a government</h2><button class="btn" type="button" id="resetVotes">Reset to poll average</button></div>
-    <p class="small intro">Seats are calculated with the Sainte-Laguë method used by the Electoral Commission, from the average of the six most recent polls (27 July to 3 September 2026). Move a slider to test other results. A party needs 5 percent of the party vote or one electorate seat. 61 of 120 seats is a majority.</p>
+    <p class="small intro">Seats are calculated with the Sainte-Laguë method used by the Electoral Commission, from the average of the six most recent polls (27 July to 5 October 2026). Move a slider to test other results. A party needs 5 percent of the party vote or one electorate seat. 61 of 120 seats is a majority.</p>
     <div class="coal">
       <div class="panel blocs" id="blocs"></div>
       <div class="panel sliders" id="sliders"></div>
@@ -220,6 +220,7 @@ td.issue b{display:block;font-weight:600}
       <li><a href="https://en.wikipedia.org/wiki/2026_New_Zealand_general_election">2026 New Zealand general election, policy pledges by party, Wikipedia</a></li>
       <li>Economic growth: <a href="https://www.national.org.nz/policies/new-trade">National trade plan</a>, <a href="https://www.national.org.nz/policies/nationals-eco-plan">National economic plan</a>, <a href="https://www.act.org.nz/policies/economy">ACT economy</a>, <a href="https://www.nzfirst.nz/the_100bn_new_zealand_future_fund">New Zealand First Future Fund</a>, <a href="https://www.nzfirst.nz/use_it_or_lose_it_dairy_policy">New Zealand First dairy</a>, <a href="https://www.labour.org.nz/futurefund">Labour Future Fund</a>, <a href="https://www.labour.org.nz/start-work-now">Labour Start Work Now</a>, <a href="https://www.greens.org.nz/government_in_the_economy_policy">Green government in the economy</a>, <a href="https://www.maoriparty.org.nz/economic_development">Te Pāti Māori economic development</a>, <a href="https://www.opportunity.org.nz/breakthrough-economy">Opportunity Breakthrough Economy</a></li>
       <li>Education: <a href="https://www.national.org.nz/policies/ece-screen-use">National screen use</a>, <a href="https://www.national.org.nz/policies/nationals-eco-plan">National economic plan</a>, <a href="https://www.national.org.nz/news/20250804-rt-hon-christopher-luxon-replacing-ncea-to-transform-secondary-education">National replacing NCEA</a>, <a href="https://www.act.org.nz/policies/education">ACT education</a>, <a href="https://www.nzfirst.nz/update_education_not_indoctrination">New Zealand First on sexuality education</a>, <a href="https://www.labour.org.nz/start-work-now">Labour Start Work Now</a>, <a href="https://www.labour.org.nz/apprenticeshipboost">Labour Apprenticeship Boost</a>, <a href="https://www.1news.co.nz/2026/09/17/labour-says-it-will-set-up-body-to-oversee-nzs-school-curriculum/">Labour curriculum council, 1News, 17 September 2026</a>, <a href="https://www.greens.org.nz/education_policy">Green education</a>, <a href="https://www.greens.org.nz/green_party_announces_plan_for_free_and_nutritious_school_lunches">Green school lunches</a>, <a href="https://www.maoriparty.org.nz/education_training">Te Pāti Māori education</a>, <a href="https://www.opportunity.org.nz/future_fit_education">Opportunity Future-fit Education</a>, <a href="https://www.opportunity.org.nz/breakthrough-economy">Opportunity Breakthrough Economy</a>, <a href="https://salient.org.nz/post/which-party-should-i-vote-for-your-guide-to-the-2026-election">Salient election guide (tertiary)</a></li>
+      <li>Weekly update 8 October 2026: <a href="https://www.1news.co.nz/2026/09/28/poll-greens-surge-to-best-result-ever-as-national-labour-slide-further/">1News Verian poll, 28 September</a> (Te Pāti Māori figure taken as 1 percent from the 6 October report, which calls it steady), <a href="https://www.1news.co.nz/2026/10/06/poll-opportunity-still-in-kingmaker-seat-as-greens-hold-strong/">1News Verian poll, 6 October</a>, <a href="https://www.national.org.nz/policies/more-medicines-and-earlier-care">National: More medicines and earlier care</a></li>
       <li><a href="https://manifesto-project.wzb.eu/">Manifesto Project dataset, version 2026a, WZB Berlin Social Science Center</a></li>
       <li><a href="https://elections.nz/democracy-in-nz/what-is-new-zealands-system-of-government/what-is-mmp/sainte-lague/">How seats are allocated, Electoral Commission</a></li>
       <li><a href="https://www.taxpayers.org.nz/bribe_o_meter_national">Taxpayers' Union Bribe-o-meter: National</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_labour">Labour</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_greens">Green</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_act">ACT</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_nzfirst">New Zealand First</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_opportunity">Opportunity</a></li>
@@ -245,8 +246,8 @@ const BLOCS = [
 ];
 
 // ---------- 1. Seat projection ----------
-// Six most recent polls: Roy Morgan, RNZ Reid Research, 1News Verian, Talbot Mills, Curia (August), Curia (September). Order: nat, lab, grn, act, nzf, tpm, top
-const RECENT = [[31,24,15.5,10.5,7.5,1.5,9.5],[29.1,32.2,10.2,7.7,11.9,3.0,5.3],[29,30,12,9,8,1.1,8],[29,34,8,7,13,3,5.2],[31,27.8,10.1,7.3,9.1,1.5,6.1],[29,25.9,13.9,10.5,8.4,2,4.5]];
+// Six most recent polls: 1News Verian (October), 1News Verian (September), Curia (September), Roy Morgan (August), RNZ Reid Research (August), 1News Verian (August). Order: nat, lab, grn, act, nzf, tpm, top
+const RECENT = [[29,28,16,9,10,1,7],[28,28,16,11,9,1,6],[29,25.9,13.9,10.5,8.4,2,4.5],[31,24,15.5,10.5,7.5,1.5,9.5],[29.1,32.2,10.2,7.7,11.9,3.0,5.3],[29,30,12,9,8,1.1,8]];
 const AVG = ORDER.map((_,i) => Math.round(RECENT.reduce((s,r) => s + r[i], 0) / RECENT.length * 10) / 10);
 let votes = [...AVG];
 let tpmElectorate = true;
@@ -314,7 +315,9 @@ const POLLS = {
 2026-02-07,34,32,11,9,10,2,1
 2026-04-11,30,37,11,7,10,1.5,3.3
 2026-06-13,29,32,13,6,11,1.8,4.6
-2026-08-08,29,30,12,9,8,1.1,8`,
+2026-08-08,29,30,12,9,8,1.1,8
+2026-09-23,28,28,16,11,9,1,6
+2026-10-01,29,28,16,9,10,1,7`,
  curia:`2023-10-14,38.1,26.9,11.6,8.6,6.1,3.1,2.2
 2023-11-01,37,28.3,13.8,8.1,6,3.4,2.9
 2023-12-03,34.2,26.9,8.3,13,5.4,5.5,1.1
@@ -484,7 +487,7 @@ const GRID = [
   tpm:"Build public and affordable homes, ease building on Māori land, stop speculation.",
   top:"Land value tax “projected to reduce property prices 10 to 15 percent”."}},
  {topic:"Health", p:{
-  nat:"96 more beds at Christchurch Hospital.",
+  nat:"604 million dollars more for Pharmac medicines, paid for by cutting foreign aid outside the Pacific. Free bowel screening from age 50 and breast screening to 74 by 2029, free cervical screening for women 25 to 69 from March 2027, and 96 more beds at Christchurch Hospital.",
   act:"A competitive health sector mixing public, private and community providers. Pharmacists treating more conditions, a national cancer centre.",
   nzf:"“Shift the focus of healthcare from treating illness to preventing it.”",
   lab:"Three free doctor's visits a year for everyone, free prescriptions, free maternity scans and cervical screening, a job for every graduate nurse.",
