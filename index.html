@@ -150,13 +150,13 @@ td.issue b{display:block;font-weight:600}
   <header>
     <div class="eyebrow">New Zealand general election, Saturday 7 November 2026</div>
     <h1>Election 2026 Policy Map</h1>
-    <p class="muted">Under proportional representation your party vote helps decide which group of parties governs. This page shows the likely coalitions, where they agree and disagree, what each party's plans cost, and how the parties line up. Figures are as of 22 October 2026.</p>
+    <p class="muted">Under proportional representation your party vote helps decide which group of parties governs. This page shows the likely coalitions, where they agree and disagree, what each party's plans cost, and how the parties line up. Figures are as of 29 October 2026.</p>
   </header>
 
   <!-- 1. Coalitions -->
   <section>
     <div class="head"><h2>Who could form a government</h2><button class="btn" type="button" id="resetVotes">Reset to poll average</button></div>
-    <p class="small intro">Seats are calculated with the Sainte-Laguë method used by the Electoral Commission, from the average of the six most recent polls (4 September to 19 October 2026). Move a slider to test other results. A party needs 5 percent of the party vote or one electorate seat. 61 of 120 seats is a majority.</p>
+    <p class="small intro">Seats are calculated with the Sainte-Laguë method used by the Electoral Commission, from the average of the six most recent polls (4 September to 25 October 2026). Move a slider to test other results. A party needs 5 percent of the party vote or one electorate seat. 61 of 120 seats is a majority.</p>
     <div class="coal">
       <div class="panel blocs" id="blocs"></div>
       <div class="panel sliders" id="sliders"></div>
@@ -223,6 +223,7 @@ td.issue b{display:block;font-weight:600}
       <li>Weekly update 8 October 2026: <a href="https://www.1news.co.nz/2026/09/28/poll-greens-surge-to-best-result-ever-as-national-labour-slide-further/">1News Verian poll, 28 September</a> (Te Pāti Māori figure taken as 1 percent from the 6 October report, which calls it steady), <a href="https://www.1news.co.nz/2026/10/06/poll-opportunity-still-in-kingmaker-seat-as-greens-hold-strong/">1News Verian poll, 6 October</a>, <a href="https://www.national.org.nz/policies/more-medicines-and-earlier-care">National: More medicines and earlier care</a></li>
       <li>Weekly update 15 October 2026: <a href="https://www.1news.co.nz/2026/10/13/poll-hipkins-and-luxon-now-neck-and-neck-opportunity-on-track-for-10-mps/">1News Verian poll, 13 October</a>, <a href="https://en.wikipedia.org/wiki/Opinion_polling_for_the_2026_New_Zealand_general_election">Freshwater Strategy and Anacta September polls, Wikipedia</a>, <a href="https://www.greens.org.nz/greens_economic_development_plan_will_create_284_000_jobs">Green economic development plan</a>, <a href="https://www.act.org.nz/news/act-to-abolish-another-of-labour-s-renters-taxes">ACT rental losses</a>, <a href="https://www.nzfirst.nz/nzfirst_policy_announcement_changes_to_fast_track_residential_approvals">New Zealand First fast-track housing</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_national">Taxpayers' Union Bribe-o-meter, weeks 5 and 6</a></li>
       <li>Weekly update 22 October 2026: <a href="https://www.1news.co.nz/2026/10/20/poll-national-jumps-leaving-labours-position-perilous/">1News Verian poll, 20 October</a> (Te Pāti Māori reported only as below 1 percent, so left blank), <a href="https://www.labour.org.nz/ed-recovery-plan">Labour ED Recovery Plan</a>, <a href="https://www.national.org.nz/news/261011-ericastanford">National school leaving age</a>, <a href="https://www.act.org.nz/news/act-will-put-trades-on-an-equal-footing-with-university">ACT trades and university</a>, Taxpayers' Union Bribe-o-meter, week 7</li>
+      <li>Weekly update 29 October 2026: <a href="https://www.1news.co.nz/2026/10/27/poll-coalition-has-path-to-power-but-labour-steady-amid-gangs-row/">1News Verian poll, 27 October</a>, <a href="https://www.labour.org.nz/buy-your-first-home">Labour Buy Your First Home</a>, <a href="https://www.labour.org.nz/renting-better">Labour Making Renting Better</a></li>
       <li><a href="https://manifesto-project.wzb.eu/">Manifesto Project dataset, version 2026a, WZB Berlin Social Science Center</a></li>
       <li><a href="https://elections.nz/democracy-in-nz/what-is-new-zealands-system-of-government/what-is-mmp/sainte-lague/">How seats are allocated, Electoral Commission</a></li>
       <li><a href="https://www.taxpayers.org.nz/bribe_o_meter_national">Taxpayers' Union Bribe-o-meter: National</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_labour">Labour</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_greens">Green</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_act">ACT</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_nzfirst">New Zealand First</a>, <a href="https://www.taxpayers.org.nz/bribe_o_meter_opportunity">Opportunity</a></li>
@@ -248,8 +249,8 @@ const BLOCS = [
 ];
 
 // ---------- 1. Seat projection ----------
-// Six most recent polls: 1News Verian (15 to 19 October; Te Pāti Māori reported only as below 1 percent, so left out of its average), 1News Verian (8 to 12 October), 1News Verian (1 to 5 October), 1News Verian (23 to 27 September), The Post Freshwater Strategy (September), Anacta (September). Order: nat, lab, grn, act, nzf, tpm, top
-const RECENT = [[32,27,16,11,8,null,7],[28,28,15,10,10,0.4,8],[29,28,16,9,10,1,7],[28,28,16,11,9,1,6],[27,28,14,9,13,2,6],[30,31,12,8,10,2,7]];
+// Six most recent polls: 1News Verian (21 to 25 October), 1News Verian (15 to 19 October; Te Pāti Māori reported only as below 1 percent, so left out of its average), 1News Verian (8 to 12 October), 1News Verian (1 to 5 October), 1News Verian (23 to 27 September), The Post Freshwater Strategy (September). Order: nat, lab, grn, act, nzf, tpm, top
+const RECENT = [[28.9,27.3,14.8,12.4,10.0,0.1,6.3],[32,27,16,11,8,null,7],[28,28,15,10,10,0.4,8],[29,28,16,9,10,1,7],[28,28,16,11,9,1,6],[27,28,14,9,13,2,6]];
 const AVG = ORDER.map((_,i) => { const v = RECENT.map(r => r[i]).filter(x => x !== null); return Math.round(v.reduce((a,b) => a + b, 0) / v.length * 10) / 10; });
 let votes = [...AVG];
 let tpmElectorate = true;
@@ -321,7 +322,8 @@ const POLLS = {
 2026-09-23,28,28,16,11,9,1,6
 2026-10-01,29,28,16,9,10,1,7
 2026-10-08,28,28,15,10,10,0.4,8
-2026-10-15,32,27,16,11,8,,7`,
+2026-10-15,32,27,16,11,8,,7
+2026-10-21,28.9,27.3,14.8,12.4,10.0,0.1,6.3`,
  curia:`2023-10-14,38.1,26.9,11.6,8.6,6.1,3.1,2.2
 2023-11-01,37,28.3,13.8,8.1,6,3.4,2.9
 2023-12-03,34.2,26.9,8.3,13,5.4,5.5,1.1
@@ -486,7 +488,7 @@ const GRID = [
   nat:"Make 5 percent first home deposits more accessible. Simplify building consents.",
   act:"“People should be free to build on their property unless causing material harm.” Let landlords offset rental losses against other income, costing 264 to 303 million dollars a year.",
   nzf:"Fast-tracked housing approved only when roads, water and other infrastructure are funded and deliverable. Expert panels could decline projects, and listed projects not lodged by the end of 2028 lose fast-track access.",
-  lab:"Start building and repair work now, including social housing. 6,000 more state homes.",
+  lab:"Start building and repair work now, including 6,000 more state homes. A 5 percent deposit through an expanded First Home Loan, a rent-to-buy pathway for public housing tenants, and a ban on evictions without a cause.",
   grn:"Tens of thousands of public homes, 2 percent cap on rent rises, end no cause evictions.",
   tpm:"Build public and affordable homes, ease building on Māori land, stop speculation.",
   top:"Land value tax “projected to reduce property prices 10 to 15 percent”."}},
